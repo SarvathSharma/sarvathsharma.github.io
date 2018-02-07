@@ -22,6 +22,6 @@ function mouseClicked() {
 
 function deviceShaken() {
   fill(random(255), random(255), random(255), random(255));
-  textSize(32);
-  text('Congrats! You did something', 50, 50);
+  textSize(500);
+  text('Congrats! You did something', random(100), random(100));
 }
