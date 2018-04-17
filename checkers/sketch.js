@@ -6,7 +6,7 @@
 // Sorry was not able to do a good job and finish this game (will try to finish it for the near future)
 
 // The global variables
-let playGrid = [
+let playGrid = [// This grid is for the playing portion
   [0, 1, 0, 1, 0, 1, 0, 1, ],
   [1, 0, 1, 0, 1, 0, 1, 0, ],
   [0, 1, 0, 1, 0, 1, 0, 1, ],
@@ -17,7 +17,7 @@ let playGrid = [
   [2, 0, 2, 0, 2, 0, 2, 0, ],
 ];
 
-let staticGrid = [
+let staticGrid = [// This grid is for the creation of the board
   [0, 1, 0, 1, 0, 1, 0, 1, ],
   [1, 0, 1, 0, 1, 0, 1, 0, ],
   [0, 1, 0, 1, 0, 1, 0, 1, ],
@@ -32,7 +32,9 @@ let rows = 8;
 let cols = 8;
 let cellSize, player, comp;
 let turn, state, redMove, blackMove;
-let topRight, topLeft, bottomRight, bottomLeft, killMoveRedLeft, killMoveRedRight, killMoveBlackLeft, killMoveBlackRight;
+let redLeft, blackLeft, redWon, blackWon;
+let topRight, topLeft, bottomRight, bottomLeft;
+let killMoveRedLeft, killMoveRedRight, killMoveBlackLeft, killMoveBlackRight;
 
 function setup() {
   if (windowWidth > windowHeight) {
@@ -46,6 +48,11 @@ function setup() {
   state = 0;
   redMove = 0; // To allow the red piece to move
   blackMove = 0; // To allow the black piece to move
+  // Variables to check who wins
+  redLeft = 0;
+  blackLeft = 0;
+  redWon = false;
+  blackWon = false;
 }
 
 function draw() {
@@ -56,7 +63,41 @@ function draw() {
     background(255);
     displayGrid();
     placePieces();
+    checkWhoWon();
   }
+  if (state === 2) {
+    computerModeNotDone();
+  }
+  if (state === 3) {
+    winScreen();
+  }
+  if (state === 4) {
+    winScreen();
+  }
+}
+
+function winScreen() {
+  // This will show a screen depending on who won
+  if (redWon) {
+    background(255, 0, 0);
+    fill(0);
+    textSize(95);
+    text("RED WON", width/2-300, height/2);
+  }
+  if (blackWon) {
+    background(0);
+    fill(255);
+    textSize(95);
+    text("BLACK WON", width/2-300, height/2);
+  }
+}
+
+function computerModeNotDone() {
+  // This runs the second portion of the game
+  background(0);
+  fill(255);
+  textSize(95);
+  text("SORRY NOT DONE", width/2-400, height/2);
 }
 
 function startScreen() {
@@ -93,12 +134,12 @@ function placePieces() {
   for (let x = 0; x < cols; x++) {
     for (let y = 0; y < rows; y++) {
       if (playGrid[y][x] === 1) {
-        // Places a black circle on the spot where a 3 is on the play grid
+        // Places a black circle on the spot where a 1 is on the play grid
         fill(0);
         player = ellipse(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, 40, 40);
       }
       if (playGrid[y][x] === 2) {
-        // Places a red circle on the spot where a 3 is on the play grid
+        // Places a red circle on the spot where a 2 is on the play grid
         fill(255, 0, 0);
         comp = ellipse(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, 40, 40);
       }
@@ -116,6 +157,10 @@ function keyPressed() {
     // When the 'f' key is clicked the game will start
     state = 1;
   }
+  if (keyCode === 65) {
+    // When the 'a' keys is clicked the game will start
+    state = 2;
+  }
 }
 
 function mousePressed() {
@@ -131,8 +176,7 @@ function mousePressed() {
           console.log("x: " + floor(xcoord + 1));
           console.log("y: " + floor(ycoord - 1));
           console.log("piece");
-          topRight = playGrid[floor(ycoord - 1)][floor(xcoord + 1)] = 3;
-          redMove = 1;
+          topRight, playGrid[floor(ycoord - 1)][floor(xcoord + 1)] = 3;
         }
         if (playGrid[floor(ycoord - 1)][floor(xcoord - 1)] === 0) {
           // Checks to see for an empty spot on the top left
@@ -140,16 +184,15 @@ function mousePressed() {
           console.log("x: " + floor(xcoord - 1));
           console.log("y: " + floor(ycoord - 1));
           console.log("piece");
-          topLeft = playGrid[floor(ycoord - 1)][floor(xcoord - 1)] = 3;
-          redMove = 1;
+          topLeft, playGrid[floor(ycoord - 1)][floor(xcoord - 1)] = 3;
         }
         if (playGrid[floor(ycoord - 1)][floor(xcoord - 1)] === 1 && playGrid[floor(ycoord - 2)][floor(xcoord - 2)] === 0) {
           // Checks if you can attack from the top left
-          killMoveRedLeft = playGrid[floor(ycoord - 2)][floor(xcoord - 2)] = 3;
+          killMoveRedLeft, playGrid[floor(ycoord - 2)][floor(xcoord - 2)] = 3;
         }
         if (playGrid[floor(ycoord - 1)][floor(xcoord + 1)] === 1 && playGrid[floor(ycoord - 2)][floor(xcoord + 2)] === 0) {
           // Checks if you can attack from the top right
-          killMoveRedRight = playGrid[floor(ycoord - 2)][floor(xcoord + 2)] = 3;
+          killMoveRedRight, playGrid[floor(ycoord - 2)][floor(xcoord + 2)] = 3;
         }
       }
       redMove = 1;
@@ -178,7 +221,7 @@ function mousePressed() {
           console.log("x: " + floor(xcoord + 1));
           console.log("y: " + floor(ycoord + 1));
           console.log("piece");
-          bottomRight = playGrid[floor(ycoord + 1)][floor(xcoord + 1)] = 3;
+          bottomRight, playGrid[floor(ycoord + 1)][floor(xcoord + 1)] = 3;
         }
         if (playGrid[floor(ycoord + 1)][floor(xcoord - 1)] === 0) {
           // Checks to see an empty spot on the bottom left
@@ -186,15 +229,15 @@ function mousePressed() {
           console.log("x: " + floor(xcoord - 1));
           console.log("y: " + floor(ycoord + 1));
           console.log("piece");
-          bottomLeft = playGrid[floor(ycoord + 1)][floor(xcoord - 1)] = 3;
+          bottomLeft, playGrid[floor(ycoord + 1)][floor(xcoord - 1)] = 3;
         }
         if (playGrid[floor(ycoord + 1)][floor(xcoord - 1)] === 2 && playGrid[floor(ycoord + 2)][floor(xcoord - 2)] === 0) {
           // Checks if you can attack from the bottom left
-          killMoveBlackLeft = playGrid[floor(ycoord + 2)][floor(xcoord - 2)] = 3;
+          killMoveBlackLeft, playGrid[floor(ycoord + 2)][floor(xcoord - 2)] = 3;
         }
         if (playGrid[floor(ycoord + 1)][floor(xcoord + 1)] === 2 && playGrid[floor(ycoord + 2)][floor(xcoord + 2)] === 0) {
           // Checks if you can attack from the bottom right
-          killMoveBlackRight = playGrid[floor(ycoord + 2)][floor(xcoord - 2)] = 3;
+          killMoveBlackRight, playGrid[floor(ycoord + 2)][floor(xcoord - 2)] = 3;
         }
         blackMove = 1;
       }
@@ -218,52 +261,79 @@ function mousePressed() {
 
 function movePiece(x, y) {
   // In this function the location input is taken and allows the pieces to move around the board
-  if (topRight === 3) {
+  // The new location will be replaced by the piece and the old locations will be empty
+  // The function will end up replacing the 3s with either a 1 or 2 or 0 and allow the game to move along
+
+  if (topRight === 3 && mouseIsPressed) {
     playGrid[floor(y - 1)][floor(x + 1)] = 2;
     playGrid[floor(y - 1)][floor(x - 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 1;
   }
-  if (topLeft === 3) {
+  if (topLeft === 3 && mouseIsPressed) {
     playGrid[floor(y - 1)][floor(x - 1)] = 2;
     playGrid[floor(y - 1)][floor(x + 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 1;
   }
-  if (bottomRight === 3) {
+  if (bottomRight === 3 && mouseIsPressed) {
     playGrid[floor(y + 1)][floor(x + 1)] = 1;
     playGrid[floor(y + 1)][floor(x - 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 0;
   }
-  if (bottomLeft === 3) {
+  if (bottomLeft === 3 && mouseIsPressed) {
     playGrid[floor(y + 1)][floor(x - 1)] = 1;
     playGrid[floor(y + 1)][floor(x + 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 0;
   }
-  if (killMoveRedRight === 3) {
+  if (killMoveRedRight === 3 && mouseIsPressed) {
     playGrid[floor(y - 2)][floor(x + 2)] = 2;
     playGrid[floor(y - 1)][floor(x + 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 1;
   }
-  if (killMoveRedLeft === 3) {
+  if (killMoveRedLeft === 3 && mouseIsPressed) {
     playGrid[floor(y - 2)][floor(x - 2)] = 2;
     playGrid[floor(y - 1)][floor(x - 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 1;
   }
-  if (killMoveBlackLeft === 3) {
+  if (killMoveBlackLeft === 3 && mouseIsPressed) {
     playGrid[floor(y + 2)][floor(x - 2)] = 1;
     playGrid[floor(y + 1)][floor(x - 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 0;
   }
-  if (killMoveBlackRight === 3) {
+  if (killMoveBlackRight === 3 && mouseIsPressed) {
     playGrid[floor(y + 2)][floor(x - 2)] = 1;
     playGrid[floor(y + 1)][floor(x + 1)] = 0;
     playGrid[floor(y)][floor(x)] = 0;
     turn = 0;
+  }
+}
+
+function checkWhoWon() {
+  // This function checks who won
+  for (let x = 0; x < cols; x++) {
+    for (let y = 0; y < rows; y++) {
+      if (playGrid[y][x] === 1) {
+        // Checks how many black pieces are left
+        blackLeft += 1;
+      }
+      if (playGrid[y][x] === 2) {
+        // Checks how many red pieces are left
+        redLeft += 1;
+      }
+    }
+  }
+  if (redLeft === 0) {// If there are no red pieces, black won
+    blackWon = true;
+    state = 3;
+  }
+  else if (blackLeft === 0) {// If there are no black pieces, red won
+    redWon = true;
+    state = 4;
   }
 }
