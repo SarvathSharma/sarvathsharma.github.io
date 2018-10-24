@@ -1,7 +1,7 @@
-// 2d Array Demo
+// Game of Life Demo
 
-let rows = 30;
-let cols = 30;
+let rows = 40;
+let cols = 40;
 let grid;
 let cellSize;
 let autoPlay;
@@ -106,19 +106,19 @@ function mouseClicked() {
 }
 
 function keyPressed() {
-  if (keyCode === 82) {
+  if (keyCode === 82) {//r key that makes the grid
     grid = create2dArray(cols, rows);
   }
-  else if (keyCode === 32) {
+  else if (keyCode === 32) {// spacebar changes the grid value over time
     change();
   }
-  if (keyCode === 87) {
+  if (keyCode === 87) {// w key that clears the grid
     grid = createEmpty2dArray(cols, rows);
   }
-  if (keyCode === 65) {
+  if (keyCode === 65) {// a key that starts the game
     autoPlay = !autoPlay;
   }
-  if (keyCode === 70) {
+  if (keyCode === 70) {// f key speeds it up
     number -= 1;
   }
 }
